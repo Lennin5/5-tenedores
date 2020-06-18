@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Button } from 'react-native';
 import { Avatar } from "react-native-elements";
 import * as firebase from "firebase";
 import * as Permissions from "expo-permissions";
@@ -13,11 +13,14 @@ export default function InfoUser(props){
     
     const [loading, setloading] = useState(false);
     const { 
-        userInfo: { uid ,photoURL, displayName, email },
+        userInfo: { uid ,photoURL, displayName, email, emailVerified },
         toastRef
     } = props;    
 
-    console.log(props.userInfo);
+    const [EmailVerified, setEmailVerified] = useState(emailVerified)
+
+    // console.log(props.userInfo);
+    // console.log(EmailVerified);
     
     if(displayName == null){
         // Empty Condition
@@ -36,21 +39,18 @@ export default function InfoUser(props){
 
         if(resultPermissionCamera === "denied"){
             toastRef.current.show("Es necesario aceptar los permisos de la galería");
-        }else{
-            setloading(true);
+        }else{            
             const result = await ImagePicker.launchImageLibraryAsync({
                 allowsEditing: true,
                 aspect: [4, 3]
             })
 
-            if(result.cancelled){
-                setloading(false);
+            if(result.cancelled){                
                 toastRef.current.show("Se ha cancelado la selección de imagenes");                
             }else {
-                uploadImage(result.uri).then(() => {                        
-                    setloading(false);
-                    toastRef.current.show("Se ha actualizado la foto de perfil");   
-                    updatePhotoURL();                 
+                uploadImage(result.uri).then(() => {                                                                   
+                    updatePhotoURL();         
+                    // toastRef.current.show("Se ha actualizado la foto de perfil");                            
                 }).catch(() => {
                     console.log("Parece que ha habido un error!");                    
                 });
@@ -59,6 +59,7 @@ export default function InfoUser(props){
     };
 
     const uploadImage = async (uri) => {
+        setloading(true);
         const response = await fetch(uri);
         const blob = await response.blob(); 
 
@@ -66,7 +67,7 @@ export default function InfoUser(props){
         return ref.put(blob);
     }
 
-    const updatePhotoURL = () => {
+    const updatePhotoURL = () => {        
         firebase
         .storage()
         .ref(`avatars/${uid}`)
@@ -74,9 +75,14 @@ export default function InfoUser(props){
         .then(async (resp) => {
             const update = {
                 photoURL: resp
-            };
-            await firebase.auth().currentUser.updateProfile(update);  
-            });                      
+            };            
+            await firebase.auth().currentUser.updateProfile(update);              
+            setloading(false);
+            toastRef.current.show("Se ha actualizado la foto de perfil");
+            })
+            .catch(()=>{                
+                toastRef.current.show("Error al actualizar el avatar");   
+            });          
     };
 
     return(    
@@ -100,6 +106,10 @@ export default function InfoUser(props){
                 <Text style={{color: colors.text}}>
                 { email ? email : `${firstWord}@expo.com`}
                 </Text>
+                <Button
+                title="Click Me! :)"			
+                onPress={()=>setEmailVerified(!EmailVerified)}
+			    />	
             </View>
             <LoadingManual isVisible={loading} />
         </View>            

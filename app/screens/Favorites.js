@@ -2,19 +2,16 @@ import React, { useState } from "react";
 import { View, Text, Button } from "react-native";
 import LoadingAM from "../components/LoadingManual";
 
-export default function Favorites(props){	
+export default function Favorites(){	
 
-	const [loadingAM, setloadingAM] = useState(false);	
-
-	console.log(props);
-	
+	const [loadingAM, setloadingAM] = useState(false);			
 	return(
-		<View>			
-			<Text>Cuerpo de favoritos</Text>	
+		<View>				
+			<Text></Text>	
 			<LoadingAM isVisible={loadingAM} />
 			<Button
 			title="Change Theme App"				
-			/>					
+			/>						
 		</View>
 		)
 }

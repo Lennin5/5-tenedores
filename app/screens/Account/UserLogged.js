@@ -5,24 +5,28 @@ import * as firebase from "firebase";
 import Toast from "react-native-easy-toast";
 import LoadingDefault from "../../components/LoadingDefault";
 import InfoUser from "../../components/Account/InfoUser";
+import AccountOptions from "../../components/Account/AccountOptions";
 import { useTheme } from "@react-navigation/native";
+
 
 
 export default function UserLogged(){
 
-	const [userInfo, setuserInfo] = useState(null)	
+	const [userInfo, setUserInfo] = useState(null);
 	const [loading, setloading] = useState(false);
 	const [loadingText, setloadingText] = useState("");
+	const [reloadUserInfo, setReloadUserInfo] = useState(false)
 	const toastRef = useRef();
 	const { colors } = useTheme();
 
 	useEffect(() => {
 		(async () =>{
 			const user = await firebase.auth().currentUser;			
-			setuserInfo(user);
-			console.log(user);			
-		})()
-	}, []);
+			setUserInfo(user);
+			// console.log(user);			
+		})();
+		setReloadUserInfo(false);
+	}, [reloadUserInfo]);
 
 	return(
 	<>
@@ -31,7 +35,12 @@ export default function UserLogged(){
 	{/* Si userInfo tiene datos te vas a renderizar	 */}
 	{ userInfo && <InfoUser userInfo={userInfo} toastRef={toastRef} /> }	
 	
-	<Text>Account Options</Text> 
+	<AccountOptions 
+		userInfo={userInfo} 
+		toastRef={toastRef}
+		setReloadUserInfo={setReloadUserInfo}
+		setD
+		/>
 
 	<Button
 	title="Cerrar Sesión"

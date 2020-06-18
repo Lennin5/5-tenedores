@@ -5,15 +5,16 @@ import { useTheme } from '@react-navigation/native';
 
 const Stack = createStackNavigator();
 
-export default function FavoritesStack(){
-    const { colors } = useTheme();
+export default function FavoritesStack(){    
+    const { colors } = useTheme();        
+
     return(
-        <Stack.Navigator>
-            <Stack.Screen
+        <Stack.Navigator>            
+            <Stack.Screen                          
                 name="favorites"
                 component={Favorites}
                 options={{ 
-                    title: "Favoritos",
+                    title: "Favoritos",                    
                     headerStyle: {                                    
                         borderBottomWidth: 1,
                         borderBottomColor: colors.borderBottomColor                              
