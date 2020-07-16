@@ -5,6 +5,8 @@ import { useTheme } from "@react-navigation/native";
 import Toast from "react-native-easy-toast";
 import * as firebase from "firebase";
 
+import { NativeModules } from "react-native";
+
 export default function(props){
     const { colors } = useTheme();
     const { displayName, setShowModal, toastRef, setReloadUserInfo } = props;
@@ -42,7 +44,7 @@ export default function(props){
     }
     
     return(        
-        <View style={styles.view}>        
+        <View style={styles.view}>                     
 			<Input			
 			onFocus={ () => {setDisplayNameColor(true)}}
 			labelStyle={{ color: [ colors.theme == "dark" ? [displayNameColor ? "#7975DB" : "#B1B3B5"]
@@ -50,6 +52,7 @@ export default function(props){
             label="Nombre De Usuario"		            
 			containerStyle={styles.input}
             inputStyle={{color: colors.text}}	
+            inputContainerStyle={{borderBottomWidth: 1, borderBottomColor: colors.input}}    
             defaultValue={displayName || ""}
             onChange={e => setNewDisplayName(e.nativeEvent.text)}
             errorMessage={error}

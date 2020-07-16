@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, View, ScrollView, Text, Image  } from "react-native";
+import { StyleSheet, View, ScrollView, Text, Image, Dimensions  } from "react-native";
 import { Button, Input, Icon, SocialIcon } from "react-native-elements";
 import { validateEmail } from "../../utils/Validation";
 import Toast from "react-native-easy-toast";
@@ -7,6 +7,10 @@ import * as firebase from 'firebase';
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import LoginFacebook from "../../components/Account/LoginFacebook";
 import { useNavigation, useTheme } from "@react-navigation/native";
+
+const HeightScreen2 = Dimensions.get("window").height;
+const HeightScreen = HeightScreen2 - 340;
+// console.log(HeightScreen);
 
 export default function Login(){	
 
@@ -20,7 +24,7 @@ export default function Login(){
 	const [password, setPassword] = useState("");	
 
 	const { colors } = useTheme();
-	console.log(colors);
+	// console.log(colors);
 	
 	
 	// const getParams = async () => {		
@@ -55,7 +59,7 @@ export default function Login(){
 	
 
 	return(
-<KeyboardAwareScrollView enableOnAndroid={true}>
+<KeyboardAwareScrollView enableOnAndroid={false}>
 
 <View style={styles.viewInputsForm}>		
 {/* <Text>
@@ -69,6 +73,7 @@ export default function Login(){
 	onChange={e => setEmail(e.nativeEvent.text)}	
 	containerStyle={styles.inptForm}
 	inputStyle={{color: colors.text}}
+	inputContainerStyle={{borderBottomWidth: 1, borderBottomColor: colors.input}}
 	leftIcon={
 		<Icon
 		type="material-community"
@@ -89,6 +94,7 @@ export default function Login(){
 		onChange={e => setPassword(e.nativeEvent.text)}	
 		containerStyle={styles.inptForm}
 		inputStyle={{color: colors.text}}
+		inputContainerStyle={{borderBottomWidth: 1, borderBottomColor: colors.input}}
 		leftIcon={
 			<Icon
 			type="material-community"		
@@ -128,8 +134,14 @@ export default function Login(){
 		/>	
 </View>
 			
-<Toast ref={toastRef} position='top' opacity={0.9} fadeInDuration={800} fadeOutDuration={1000} 
-	   style={{backgroundColor:'#6848F2', width: "100%", borderRadius: 0, marginTop: 400, alignItems: "center"}} />
+<Toast ref={toastRef} position="bottom" opacity={0.9} fadeInDuration={800} fadeOutDuration={1000} positionValue={120}
+		   style={{backgroundColor: colors.primary,
+					 width: "100%",
+					 borderRadius: 0,
+					 alignItems: "center",
+					 position: "absolute",
+					 bottom: 10}} 
+	   	/>
 
 </KeyboardAwareScrollView>
 	);

@@ -5,6 +5,7 @@ export default function Search(){
 	return(
 		<View>
 			<Text>Bienvenido al buscador de New_Project</Text>
+			
 		</View>
 		)
 }

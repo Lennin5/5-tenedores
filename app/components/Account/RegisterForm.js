@@ -76,6 +76,7 @@ export default function RegisterForm(props){
 			label="Correo Electrónico"		
 			containerStyle={styles.inputForm}
 			inputStyle={{color: colors.text}}
+			inputContainerStyle={{borderBottomWidth: 1, borderBottomColor: colors.input}}
 			onChange={e => setEmail(e.nativeEvent.text)}
 			leftIcon={
 				<Icon 
@@ -96,6 +97,7 @@ export default function RegisterForm(props){
 			password={true}
 			secureTextEntry={hidePassword}
 			containerStyle={styles.inputForm}
+			inputContainerStyle={{borderBottomWidth: 1, borderBottomColor: colors.input}}
 			inputStyle={{color: colors.text}}
 			onChange={e => setPassword(e.nativeEvent.text)}
 			rightIcon={
@@ -130,6 +132,7 @@ export default function RegisterForm(props){
 			secureTextEntry={hideRepeatPassword}
 			containerStyle={styles.inputForm}
 			inputStyle={{color: colors.text}}
+			inputContainerStyle={{borderBottomWidth: 1, borderBottomColor: colors.input}}
 			onChange={e => setRepeatPassword(e.nativeEvent.text)}
 			rightIcon={
 				<Icon 

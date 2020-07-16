@@ -14,9 +14,9 @@ export default function Modal(props){
         <Overlay        
             isVisible={isVisible}          
             windowBackgroundColor={colors.theme == "dark" ? "#75757580" : "#00000080" }
-            overlayBackgroundColor={colors.secondary}
+            overlayBackgroundColor={"#f8f9fb"}
             overlayStyle={styles.overlay}
-            onBackdropPress={closeModal}
+            onBackdropPress={closeModal}            
         >
             {children}
         </Overlay>

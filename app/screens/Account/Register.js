@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { StyleSheet, View, Image } from "react-native";
+import { StyleSheet, View, Image, Text } from "react-native";
 import RegisterForm from "../../components/Account/RegisterForm";
 import Toast from "react-native-easy-toast";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -11,7 +11,7 @@ export default function Register(){
 	const { colors } = useTheme();
 
 	return(
-		<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} enableOnAndroid={true}>
+		<KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
 		<View style={styles.container}>
 			<Image 
             source={colors.theme == "dark"
@@ -22,10 +22,17 @@ export default function Register(){
 			/>
 		</View>	
 		<View>
-		<RegisterForm toastRef={toastRef} />					
+		<RegisterForm toastRef={toastRef} />		
+		<Text></Text>			
 		</View>	
-		<Toast ref={toastRef} position='top' opacity={0.9} fadeInDuration={800} fadeOutDuration={1000} 
-	   style={{backgroundColor:'#6848F2', width: "100%", borderRadius: 0, marginTop: 400, alignItems: "center"}} />		
+		<Toast ref={toastRef} position="bottom" opacity={0.9} fadeInDuration={800} fadeOutDuration={1000} positionValue={121}
+		   style={{backgroundColor: colors.primary,
+					 width: "100%",
+					 borderRadius: 0,
+					 alignItems: "center",
+					 position: "absolute",
+					 bottom: 10}} 
+	   	/>		
 		</KeyboardAwareScrollView>
 		)
 }

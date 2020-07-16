@@ -4,8 +4,11 @@ import { ListItem } from "react-native-elements";
 import {map } from "lodash";
 import { useTheme } from "@react-navigation/native";
 import Modal from "../../components/Modal";
-import ChangeDisplayNameForm from "../../components/ChangeDisplayNameForm";
+import ChangeDisplayNameForm from "../../components/Account/ChangeDisplayNameForm";
 import ChangeEmailForm from "../../components/Account/ChangeEmailForm";
+import ChangePasswordForm from "../../components/Account/ChangePasswordForm";
+
+import * as firebase from "firebase";
 
 export default function AccountOptions(props){    
 
@@ -16,11 +19,11 @@ export default function AccountOptions(props){
         switch (key) {
             case "displayName":
                 setRenderComponent(
-                    <ChangeDisplayNameForm 
-                        displayName={userInfo.displayName}
-                        setShowModal={setShowModal}
-                        toastRef={toastRef}
-                        setReloadUserInfo={setReloadUserInfo}
+                 <ChangeDisplayNameForm 
+                    displayName={userInfo.displayName}
+                    setShowModal={setShowModal}
+                    toastRef={toastRef}
+                    setReloadUserInfo={setReloadUserInfo}
                     />
                 );
                 setShowModal(true);
@@ -32,12 +35,17 @@ export default function AccountOptions(props){
                     setShowModal={setShowModal}
                     toastRef={toastRef}
                     setReloadUserInfo={setReloadUserInfo}                    
-                     />
+                    />
                 );
                 setShowModal(true);
                 break;
             case "password": 
-                setRenderComponent(<Text style={{color: colors.text}}>Cambiando contraseña</Text>);
+            setRenderComponent(
+                    <ChangePasswordForm                    
+                    setShowModal={setShowModal}
+                    toastRef={toastRef}
+                    />        
+                );        
                 setShowModal(true);
                 break;                
             default:
@@ -45,14 +53,14 @@ export default function AccountOptions(props){
                 break;
         }
     }
-    const menuOptions = generateOptions(selectedComponent);
+    const menuOptions = generateOptions(selectedComponent, firebase);
     const [showModal, setShowModal] = useState(true);
     const [renderComponent, setRenderComponent] = useState(null);
 
     const openModal = () => setShowModal(true);
 
     return(
-    <View>
+    <View>  
         {map(menuOptions, (menu, index) => (            
             <ListItem
                 titleStyle={{color: colors.textSecondary}}
@@ -72,12 +80,7 @@ export default function AccountOptions(props){
                 onPress={menu.onPress}                
              />
         ) )}
-        <Button
-            title="Hello"
-            onPress={openModal}
-        >
-
-        </Button>
+        
         {renderComponent &&
             <Modal isVisible={showModal} setIsVisible={setShowModal}>
             {renderComponent}
@@ -87,7 +90,7 @@ export default function AccountOptions(props){
     );
 }
 
-function generateOptions(selectedComponent){
+function generateOptions(selectedComponent, firebase){
     return(
         [
             {
@@ -111,7 +114,14 @@ function generateOptions(selectedComponent){
                 iconNameLeft: "lock-reset",
                 iconNameRight: "chevron-right",
                 onPress: () => selectedComponent("password")                
-            }
+            },
+            {
+                title: "Cerrar Sesión",
+                iconType: "material-community",
+                iconNameLeft: "logout",
+                iconNameRight: "chevron-right",
+                onPress:() => firebase.auth().signOut()
+            },            
         ]
     )
 }
@@ -119,5 +129,8 @@ function generateOptions(selectedComponent){
 const styles = StyleSheet.create({
     menuItems: {
         borderBottomWidth: 1        
-    }
+    },
+    container: {
+                
+      },
 });

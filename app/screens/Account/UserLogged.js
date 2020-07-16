@@ -8,8 +8,6 @@ import InfoUser from "../../components/Account/InfoUser";
 import AccountOptions from "../../components/Account/AccountOptions";
 import { useTheme } from "@react-navigation/native";
 
-
-
 export default function UserLogged(){
 
 	const [userInfo, setUserInfo] = useState(null);
@@ -30,7 +28,7 @@ export default function UserLogged(){
 
 	return(
 	<>
-	<View style={styles.viewUserInfo}>
+	<View style={styles.viewUserInfo }>
 
 	{/* Si userInfo tiene datos te vas a renderizar	 */}
 	{ userInfo && <InfoUser userInfo={userInfo} toastRef={toastRef} /> }	
@@ -38,11 +36,10 @@ export default function UserLogged(){
 	<AccountOptions 
 		userInfo={userInfo} 
 		toastRef={toastRef}
-		setReloadUserInfo={setReloadUserInfo}
-		setD
+		setReloadUserInfo={setReloadUserInfo}		
 		/>
 
-	<Button
+	{/* <Button
 	title="Cerrar Sesión"
 	titleStyle={{ color: colors.primary  }}	
 	onPress={() => firebase.auth().signOut()}	
@@ -51,7 +48,7 @@ export default function UserLogged(){
 						 borderTopColor: colors.primary, 
 						 borderBottomColor: colors.primary 
 						} ]}
-	/>	
+	/>	 */}
 
 	<Toast ref={toastRef} position='top' opacity={0.9} fadeInDuration={800} fadeOutDuration={1000} 
 	style={{backgroundColor:'#6848F2', width: "100%", borderRadius: 0, marginTop: 400, alignItems: "center"}} />		
@@ -68,7 +65,7 @@ const styles = StyleSheet.create({
 	},
 
 	btnCloseSesion:{
-		marginTop: 30,		
+		marginTop: 5,		
 		borderTopWidth: 2,		
 		borderBottomWidth: 2,		
 		paddingTop: 10,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
-import { Avatar } from "react-native-elements";
+import { StyleSheet, View, Text } from 'react-native';
+import { Avatar, Button } from "react-native-elements";
 import * as firebase from "firebase";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
@@ -35,7 +35,7 @@ export default function InfoUser(props){
         
         const resultPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);        
         const resultPermissionCamera = resultPermission.permissions.cameraRoll.status;
-        console.log(resultPermission);
+        // console.log(resultPermission);
 
         if(resultPermissionCamera === "denied"){
             toastRef.current.show("Es necesario aceptar los permisos de la galería");
@@ -108,7 +108,8 @@ export default function InfoUser(props){
                 </Text>
                 <Button
                 title="Click Me! :)"			
-                onPress={()=>setEmailVerified(!EmailVerified)}
+                // onPress={()=>setEmailVerified(!EmailVerified)}
+                buttonStyle={{backgroundColor: colors.primary, borderRadius: 5}}
 			    />	
             </View>
             <LoadingManual isVisible={loading} />
@@ -135,6 +136,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         paddingBottom: 10,
         fontSize: 20
-    }
+    },
 
 });
