@@ -50,6 +50,7 @@ export default function Navigation() {
       barBackgroundColor: "#ffffff", // Background de la barra de estado
       barStyle: "dark-content", // Estilo de la barra de estado
       redColor: "#d60000", // Color rojo de la app en modo normal      
+      modalMapColor: "#f8f9fb" //Color del background del Modal Map en modo normal
     }
   }; 
   const DarkTheme = {  
@@ -77,7 +78,7 @@ export default function Navigation() {
       barBackgroundColor: "#000000", // Background de la barra de estado
       barStyle: "light-content", // Estilo de la barra de estado
       redColor: "#b64040", // Color rojo de la app en modo oscuro      
-
+      modalMapColor: "#0a0a0a" //Color del background del Modal Map en modo oscuro
     },
   };    
     return(            
@@ -131,9 +132,9 @@ export default function Navigation() {
 
 // ¿Cómo importar éste componente en la screen de Restaurants?
 export function Buttom(props){
-    const { darkMode, setDarkMode } = props;    
+    const { darkMode, setDarkMode } = props;        
     return(
-      <Button      
+      <Button   
       title={darkMode ? "Dark Mode: Enabled" : "Dark Mode: Disabled"}
       titleStyle={{color: [darkMode ? "white" : "black"]}}              
       onPress={()=>setDarkMode(!darkMode)}      
@@ -141,7 +142,7 @@ export function Buttom(props){
         backgroundColor: [darkMode ? "black" : "white"],                
         borderWidth: 1,
         borderColor: [darkMode ? "white" : "black"]                                
-      }}              
+      }}   
     />   
     )
 }

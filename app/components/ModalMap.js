@@ -14,10 +14,10 @@ export default function Modal(props){
         <Overlay        
             isVisible={isVisible}          
             windowBackgroundColor={colors.theme == "dark" ? "#75757580" : "#00000080" }
-            overlayBackgroundColor={"#f8f9fb"}
+            overlayBackgroundColor={colors.modalMapColor}
             overlayStyle={styles.overlay}
             onBackdropPress={closeModal}            
-        >
+        >            
             {children}
         </Overlay>
     )

@@ -6,14 +6,14 @@ import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
 
 import LoadingManual from "../../components/IntroApp";
-import { Buttom } from "../../navigations/Navigation";
+import { Buttom  } from "../../navigations/Navigation";
 
 export default function Restaurants(props){	
 
 	const [isVisible, setIsVisible] = useState(true);
 	const { colors } = useTheme();    
 	const [userState, setUserState] = useState(null);
-	const { navigation } = props;				
+	const { navigation, darkMode, setDarkMode } = props;		
 
     useEffect(() => {
         firebase.auth().onAuthStateChanged((userInfo) => {
@@ -25,8 +25,8 @@ export default function Restaurants(props){
 		
 	return(
 		<>	
-		{/* Aquí importo la función del botón para cambiar el estado y muestra el ERROR		 */}
-		<Buttom /> 	
+		{/* Aquí importo la función del botón para cambiar el estado y muestra el ERROR		 */}			
+		<Buttom darkMode={darkMode} setDarkMode={setDarkMode} />
         <StatusBar							
 			backgroundColor={isVisible ? "white" : colors.barBackgroundColor}				
 			barStyle={isVisible ? "dark-content" : colors.barStyle}

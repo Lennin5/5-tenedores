@@ -25,6 +25,7 @@
       "supportsTablet": false
     },
     "android":{
+      "package": "com.umbrellatechnologies.cincotenedores",
       "permissions": [
         "CAMERA_ROLL",
         "READ_EXTERNAL_STORAGE",

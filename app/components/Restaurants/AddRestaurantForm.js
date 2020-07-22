@@ -7,8 +7,202 @@ import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import MapView from "react-native-maps";
+import uuid from "random-uuid-v4";
 
 import Modal from "../ModalMap";
+import { firebaseApp } from "../../../app/utils/firebase"; 
+import firebase from "firebase/app";
+import "firebase/storage";
+import "firebase/firestore";
+const db = firebase.firestore(firebaseApp);
+
+const customStyle = [
+    {
+      "elementType": "geometry",
+      "stylers": [
+        {
+        //color predeterminado "#212121"
+          "color": "#0a0a0a"
+        }
+      ]
+    },
+    {
+      "elementType": "labels.icon",
+      "stylers": [
+        {
+          "visibility": "on"
+        }
+      ]
+    },
+    {
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#ffffff"
+        }
+      ]
+    },
+    {
+      "elementType": "labels.text.stroke",
+      "stylers": [
+        {
+          "color": "#212121"
+        }
+      ]
+    },
+    {
+      "featureType": "administrative",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#757575"
+        }
+      ]
+    },
+    {
+      "featureType": "administrative.country",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#9e9e9e"
+        }
+      ]
+    },
+    {
+      "featureType": "administrative.land_parcel",
+      "stylers": [
+        {
+          "visibility": "off"
+        }
+      ]
+    },
+    {
+      "featureType": "administrative.locality",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#bdbdbd"
+        }
+      ]
+    },
+    {
+      "featureType": "poi",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#757575"
+        }
+      ]
+    },
+    {
+      "featureType": "poi.park",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#008628"
+        }
+      ]
+    },
+    {
+      "featureType": "poi.park",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#616161"
+        }
+      ]
+    },
+    {
+      "featureType": "poi.park",
+      "elementType": "labels.text.stroke",
+      "stylers": [
+        {
+          "color": "#1b1b1b"
+        }
+      ]
+    },
+    {
+      "featureType": "road",
+      "elementType": "geometry.fill",
+      "stylers": [
+        {
+          "color": "#2c2c2c"
+        }
+      ]
+    },
+    {
+      "featureType": "road",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#8a8a8a"
+        }
+      ]
+    },
+    {
+      "featureType": "road.arterial",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#373737"
+        }
+      ]
+    },
+    {
+      "featureType": "road.highway",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#636363"
+        }
+      ]
+    },
+    {
+      "featureType": "road.highway.controlled_access",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#4e4e4e"
+        }
+      ]
+    },
+    {
+      "featureType": "road.local",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#616161"
+        }
+      ]
+    },
+    {
+      "featureType": "transit",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#757575"
+        }
+      ]
+    },
+    {
+      "featureType": "water",
+      "elementType": "geometry",
+      "stylers": [
+        {
+          "color": "#00f7ff"
+        }
+      ]
+    },
+    {
+      "featureType": "water",
+      "elementType": "labels.text.fill",
+      "stylers": [
+        {
+          "color": "#757575"
+        }
+      ]
+    }
+  ]
 
 const WidthScreen = Dimensions.get("window").width;
 // console.log("No olvidar probar lo del toast WidthScreen - x valor: "+WidthScreen);
@@ -22,37 +216,88 @@ export default function AddRestaurantForm(props){
     const [restaurantAdress, setRestaurantAdress] = useState("");
     const [restaurantDescription, setRestaurantDescription] = useState("");
     const [imagesSelected, setImagesSelected] = useState([]);
-    const [isVisibleModalMap, setIsVisibleModalMap] = useState(false);
     const [locationRestaurant, setLocationRestaurant] = useState(null);
 
+    const [isVisibleModalMap, setIsVisibleModalMap] = useState(false);
+    const [reloadLocation, setReloadLocation] = useState(false);    
+
     const addRestaurant = () => {
-        // console.log("Weno");
-        console.log(locationRestaurant);        
+        if(!restaurantName || !restaurantAdress || !restaurantDescription){
+            toastRef.current.show("Todos los campos del formulario son obligatorios");
+        }else
+        if (size(imagesSelected) == 0) {
+            toastRef.current.show("El restaurante debe tener almenos 1 foto");
+        }else
+        if(!locationRestaurant){
+            toastRef.current.show("Tienes que localizar el restaurante en el mapa");
+        }else{
+            setIsLoading(true);
+            console.log("mission passed");
+            uploadImageStorage().then(resp => {                            
+              db.collection("restaurants").add({
+                name: restaurantName,
+                adress: restaurantAdress,
+                description: restaurantDescription,
+                location: locationRestaurant,
+                images: resp,
+                rating: 0,
+                ratingTotal: 0,
+                quantityVoting: 0,
+                createAt: new Date(),
+                createBy: firebase.auth().currentUser.uid
+              }).then(() => {
+                setIsLoading(false);
+                navigation.navigate("restaurants");
+              }).catch(() => {
+                setIsLoading(false);
+                toastRef.current.show("Error al subir el restaurante, intentalo de nuevo! D:");
+              })
+            })
+        }
+    }
+
+    const uploadImageStorage = async () => {
+      const imageBlob = [];
+
+      await Promise.all(
+        map(imagesSelected, async (image) => {
+          const response = await fetch(image);
+          const blob = await response.blob();
+          //También pudimos hacer esto: const name = uudi(), 
+          //poner NAME en el child y poner NAME en ref(name) linea 252
+          const ref = firebase.storage().ref("restaurants").child(uuid());
+          await ref.put(blob).then(async (resp) => {
+            await firebase.storage()
+                        .ref(`restaurants/${resp.metadata.name}`)
+                          .getDownloadURL()
+                            .then(photoURL => {
+                              imageBlob.push(photoURL);
+                            })
+  
+          });
+        })        
+      )    
+
+      return imageBlob;
     }
 
     return(
         <ScrollView style={styles.scrollView}>
 			<StatusBar
-				// backgroundColor={isVisibleModalMap ? "#7e7e7e"
-                //                  : colors.card }
-                                 
                 backgroundColor={ [colors.theme == "dark" ? [isVisibleModalMap ? "#3a3b3d" : colors.card]
-                                : [isVisibleModalMap ? "#7e7e7e" : colors.card]  ]}
-
-				// barStyle={isVisibleModalMap ? "#fafafa" 
-                //                  : colors.statusBar }
-                                 
+                                : [isVisibleModalMap ? "#7e7e7e" : colors.card]  ]}                                 
                 barStyle={colors.barStyle}                                 
-			/>		            
-            
+			/>		                        
             <PrincipalImageRestaurant imageRestaurant={imagesSelected[0]} imagesSelected={imagesSelected.length} />
             <FormAdd
                 setRestaurantName={setRestaurantName}
                 setRestaurantAdress={setRestaurantAdress}
                 setRestaurantDescription={setRestaurantDescription}
                 setIsVisibleModalMap={setIsVisibleModalMap}
+                locationRestaurant={locationRestaurant}
+                setReloadLocation={setReloadLocation}
             />
-            <UploadImage toastRef={toastRef} imagesSelected={imagesSelected} setImagesSelected={setImagesSelected} />
+            <UploadImages toastRef={toastRef} imagesSelected={imagesSelected} setImagesSelected={setImagesSelected} />
             <Button  
             buttonStyle={[styles.btnAddRestaurant, {backgroundColor: colors.primary} ]}
             title="Crear Restaurante"              
@@ -64,30 +309,37 @@ export default function AddRestaurantForm(props){
                        colors={colors}
                        setLocationRestaurant={setLocationRestaurant}
                        toastRef={toastRef}
+                       reloadLocation={reloadLocation}
+                       setReloadLocation={setReloadLocation}
+                       customStyle={customStyle}
             />         
                
         </ScrollView>
     )
 }
 
+//Componente de imagen principal del Restaurante (Recibe imageRestaurant[0] del arreglo de img seleccionadas)
 function PrincipalImageRestaurant(props){
     const { imageRestaurant } = props;
 
     return( 
         <View style={styles.viewPrimaryPhoto}>
              <Image
-              source={ imageRestaurant ? {uri: imageRestaurant} : require("../../../assets/img/no-image.png") }                             
+              source={ imageRestaurant ? {uri: imageRestaurant} : require("../../../assets/img/no-image.png") }
               style={{ width: WidthScreen, height: 200 }} /> 
         </View>                                    
     )
 }
 
+//Componente de 3 inputs del formulario del AddRestaurant
 function FormAdd(props){
     const { colors } = useTheme();
     const { setRestaurantName, 
             setRestaurantAdress, 
             setRestaurantDescription, 
-            setIsVisibleModalMap } = props;
+            setIsVisibleModalMap,
+            locationRestaurant,
+            setReloadLocation } = props;
 
     return(
         <View style={styles.viewForm}>
@@ -107,7 +359,7 @@ function FormAdd(props){
                 rightIcon={{
                     type: "material-community",
                     name: "google-maps",
-                    color: colors.icon,
+                    color: locationRestaurant ? colors.primary : colors.icon,
                     onPress: () => setIsVisibleModalMap(true)
                 }}  
             /> 
@@ -123,7 +375,8 @@ function FormAdd(props){
     )
 }
 
-function UploadImage(props){
+//Componente CargarImagenes
+function UploadImages(props){
 
     const { colors } = useTheme();
     const { toastRef,  imagesSelected, setImagesSelected } = props;
@@ -151,6 +404,7 @@ function UploadImage(props){
         );      
     }
 
+    //Seleccionar imagen y agregar (concatenar, sumar) al estado setImagesSelected([+1, +2, etc...])
     const imageSelect = async () => {
         const resultPermissions = await Permissions.askAsync(Permissions.CAMERA_ROLL);
         const resultPermissionGallery = resultPermissions.permissions.cameraRoll.status;
@@ -176,7 +430,7 @@ function UploadImage(props){
 
     return(
     
-    <View style={styles.uploadImage}>
+    <View style={styles.UploadImages}>
         {size(imagesSelected) < 5 && (
         <Icon
             size={25}
@@ -200,34 +454,45 @@ function UploadImage(props){
     )
 }
 
+//Componente Mapa para seleccionar la localización del Restaurante
 function GoogleMap(props){
-    const { isVisibleModalMap, setIsVisibleModalMap, toastRef, colors, setLocationRestaurant } = props;
+    const { isVisibleModalMap, 
+            setIsVisibleModalMap, 
+            toastRef, 
+            colors, 
+            setLocationRestaurant,
+            reloadLocation,
+            setReloadLocation, customStyle } = props;
 
-    const [location, setLocation] = useState("");
+    const [location, setLocation] = useState(null);
 
     useEffect(() => {
         (async () =>{
             const resultPermissions = await Permissions.askAsync(
                 Permissions.LOCATION
-            );
-            
+            );            
             const statusPermissions = resultPermissions.permissions.location.status;
             // console.log(statusPermissions);
 
             if(statusPermissions !== "granted"){
                 toastRef.current.show("Debes de aceptar los permisos de localización para suir un restaurante.");
             }else{
-                const loc = await Location.getCurrentPositionAsync({});
-                
+              //Aquí utilizamos el Try-Catch para evitar los Warnings en la app              
+              try {
+                const loc = await Location.getCurrentPositionAsync({});                
                 setLocation({
                     latitude: loc.coords.latitude,
                     longitude: loc.coords.longitude,
                     latitudeDelta: 0.001,                    
                     longitudeDelta: 0.001,
                 });
+              } catch (error) {
+                // console.log(error);                
+              }
             }
         })();
-    }, []);
+        setReloadLocation(false);
+    },[reloadLocation]);
 
     const confirmLocation = () => {
         setLocationRestaurant(location);
@@ -239,22 +504,23 @@ function GoogleMap(props){
         <Modal isVisible={isVisibleModalMap} setIsVisible={setIsVisibleModalMap}>
             {/* <Text style={{color: colors.text}}>Que Paso Master</Text> */}
             <View>
-                {Location && (
+                {location ? (
+                    <>
                     <MapView
                         style={styles.mapStyle}
                         initialRegion={location}
                         showsUserLocation={true}
                         onRegionChange={(region) => setLocation(region)}
+                        customMapStyle={colors.theme == "dark" ? customStyle : []}
                     >
                     <MapView.Marker
-                        coordinate={{
-                            latitude: location.latitude,
-                            longitude: location.longitude,
-                        }}
-                        draggable
-                    />                    
+                    coordinate={{
+                        latitude: location.latitude,
+                        longitude: location.longitude,
+                    }}
+                    draggable
+                    />
                     </MapView>
-                )}
                 <View style={styles.viewMapBtns}>
                     <Button 
                         title="Guardar Ubicación" 
@@ -268,13 +534,41 @@ function GoogleMap(props){
                         buttonStyle={[styles.btnMapCancel, {backgroundColor: colors.redColor}]}
                         onPress={() => setIsVisibleModalMap(false)}
                     />
-                </View>
+                </View> 
+                </>                   
+                ) : (
+                    <View style={styles.noMapStyle}>
+                        <Text></Text>                  
+                        <Image
+                            source={ colors.theme == "dark" ? require("../../../assets/img/no-location-dark.png") 
+                                                            : require("../../../assets/img/no-location.png") }
+                            style={styles.imgNoLocation}
+                            resizeMode="contain"
+                        />  
+                        <Text style={{fontWeight: 'bold', color: colors.text}}>Ubicación Desactivada</Text>  
+                        <Text style={{textAlign: 'center', marginBottom: 20, color: colors.text}}>Debes activar
+                        la ubicación de tu dispositivo para poder agregar la localización de tu restaurante.</Text>                                                       
+                    <Button 
+                        title="Activar Ubicación" 
+                        titleStyle={{color: colors.primary}}
+                        containerStyle={styles.viewMapBtnContainerSave} 
+                        buttonStyle={[styles.btnActivateLocation, {borderColor: colors.primary,}]}
+                        onPress={() => setReloadLocation(true)}
+                    />
+                    <Button 
+                        title="Cancelar Ubicación"                         
+                        containerStyle={styles.viewMapBtnContainerSave} 
+                        buttonStyle={[styles.btnMapCancelNoLocation, {backgroundColor: colors.redColor, borderColor: colors.redColor}]}
+                        onPress={() => setIsVisibleModalMap(false)}
+                    />                 
+                    </View>
+                )}
             </View>
         </Modal>        
     )
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({    
     scrollView: {
         height: "100%",        
     },
@@ -302,7 +596,7 @@ const styles = StyleSheet.create({
         height: 50,		        
     },    
 
-    uploadImage: {
+    UploadImages: {
         flexDirection: "row",        
         marginLeft: 20,
         marginRight: 20,
@@ -346,11 +640,40 @@ const styles = StyleSheet.create({
         height: 550,      
     },
 
+    noMapStyle: {
+        width: "100%",
+        height: 550,                 
+
+        justifyContent: "center",
+        alignItems: "center",
+        
+    }, 
+
+    btnActivateLocation: {
+        borderWidth: 2,                     
+        backgroundColor: "transparent",        
+        borderRadius: 15,
+        marginBottom: 10,
+        padding: 10
+    },  
+
+    btnMapCancelNoLocation: {
+        borderWidth: 1,             
+        padding: 10,
+        borderRadius: 15,        
+    },
+
+    imgNoLocation: {
+        width: "40%",                                     
+                        
+        marginTop: 100,
+        marginRight: 110,           
+    },
+
     viewMapBtns: {
         flexDirection: "row",
         justifyContent: "center",
-        marginTop: 10,
-        
+        marginTop: 10,                
     },
 
     viewMapBtnContainerCancel: {

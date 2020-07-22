@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
 		marginTop: 10,
 				
     	marginRight: 20,
-    	marginLeft: 20		
+		marginLeft: 20		,
 	},
 
 	inputForm: {

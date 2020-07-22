@@ -22,7 +22,7 @@ export default function AddRestaurant(props){
         />
         
 
-        <Toast ref={toastRef} position="bottom" opacity={0.9} fadeInDuration={800}
+        <Toast ref={toastRef} position="bottom" opacity={0.9} fadeInDuration={900}
            fadeOutDuration={1000} positionValue={121}
 		   style={{backgroundColor: colors.primary,
 					 width: "100%",
