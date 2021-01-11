@@ -23,9 +23,14 @@
     ],
     "ios": {
       "supportsTablet": false
-    },
-    "android":{
+    },    
+    "android": {
       "package": "com.umbrellatechnologies.cincotenedores",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAqlkPP-3fCTXPuWWUkW2UVVJ9bc0L0dAQ"
+        }    
+      },        
       "permissions": [
         "CAMERA_ROLL",
         "READ_EXTERNAL_STORAGE",

@@ -113,7 +113,7 @@ export default function InfoUser(props){
                 buttonStyle={{backgroundColor: colors.primary, borderRadius: 5}}
 			    />	
             </View>
-            <LoadingManual isVisible={loading} />
+            {/* <LoadingManual isVisible={loading} /> */}
         </View>            
     );
 }

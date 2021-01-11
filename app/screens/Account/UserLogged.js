@@ -13,7 +13,7 @@ export default function UserLogged(){
 	const [userInfo, setUserInfo] = useState(null);
 	const [loading, setloading] = useState(false);
 	const [loadingText, setloadingText] = useState("");
-	const [reloadUserInfo, setReloadUserInfo] = useState(false)
+	const [reloadUserInfo, setReloadUserInfo] = useState(false);
 	const toastRef = useRef();
 	const { colors } = useTheme();
 

@@ -6,6 +6,7 @@ import LoadingManual from "../../components/LoadingManual";
 import AddRestaurantForm from "../../components/Restaurants/AddRestaurantForm";
 
 
+
 export default function AddRestaurant(props){
 
     const navigation = useNavigation();
@@ -14,7 +15,7 @@ export default function AddRestaurant(props){
     const { colors } = useTheme();
 
     return(
-        <View style={{backgroundColor: colors.secondary}}>
+        <View>
         <AddRestaurantForm
             toastRef={toastRef}
             setIsLoading={setIsLoading}

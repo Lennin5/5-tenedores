@@ -1,3 +1,95 @@
+// import React, { useState, useEffect } from "react";
+// import { View, Switch, StyleSheet } from "react-native";
+
+// import { firebaseApp } from "../../utils/firebase";
+// import firebase from "firebase/app";
+// import "firebase/firestore";
+// const db = firebase.firestore(firebaseApp);
+
+// const SwitchExample = () => {      
+
+//   const [userState, setUserState] = useState(null);
+
+//   const [switchOption, setSwitchOption] = useState(false);
+
+//   useEffect(async () => {
+//     await firebase.auth().onAuthStateChanged(async function(userInfo){
+//       setUserState(userInfo);
+//       await firebase.firestore().collection(userInfo.uid).doc("Datos_Principales").
+//       onSnapshot(function(doc) {
+//         if (doc.exists) {
+//           var user=doc.data();                        
+//           setSwitchOption(user.Modo_Oscuro);                 
+//           console.log("Switch: "+switchOption);
+//       } else {          
+//           console.log("El documento no existe!");
+//       }        
+//       });               
+//     });
+//   }, [toggleSwitch]);    
+
+//   const toggleSwitch = () => {        
+//     setSwitchOption(previousState => !previousState);
+
+//     if (switchOption == false) { //Si es false el switch está activo
+      
+//       setSwitchOption(true);
+//       console.log("Dark Mode: Enabled");      
+//       db.collection(userState.uid).doc('Datos_Principales').update({
+//         Modo_Oscuro: true
+//       })
+//         .then(res => {
+//           console.log("Se han actualizado el Dark Mode a: Enabled");                    
+//         }).catch(err => {
+//           console.log("Error al Enabled: " + err);
+//         });
+                
+//     } else if (switchOption == true) { //Si es true el switch NO está activo
+      
+//       setSwitchOption(false);
+//       console.log("Dark Mode: Disabled");      
+//       db.collection(userState.uid).doc('Datos_Principales').update({
+//         Modo_Oscuro: false
+//       })
+//         .then(res => {
+//           console.log("Se han actualizado el Dark Mode a: Disabled");             
+//         }).catch(err => {
+//           console.log("Error al Disabled: " + err);
+//         });              
+//     }    
+//   }
+
+//   return (
+//     <View style={styles.container}>
+//       <Switch
+//         trackColor={{ false: "#767577", true: "#81b0ff" }}
+//         thumbColor={switchOption ? "#f5dd4b" : "#f4f3f4"}
+//         ios_backgroundColor="#3e3e3e"
+//         onValueChange={toggleSwitch}
+//         value={switchOption}
+//       />
+//     </View>
+//   );
+  
+// }
+
+// export default SwitchExample;
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     alignItems: "center",
+//     justifyContent: "center",
+//     marginTop: 40,
+//   }
+// });
+
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, Alert, Dimensions, StatusBar } from "react-native";
 import { Icon, Avatar, Image, Input, Button, colors } from "react-native-elements";
@@ -273,7 +365,7 @@ export default function AddRestaurantForm(props){
                             .then(photoURL => {
                               imageBlob.push(photoURL);
                             })
-  
+
           });
         })        
       )    
@@ -313,7 +405,7 @@ export default function AddRestaurantForm(props){
                        setReloadLocation={setReloadLocation}
                        customStyle={customStyle}
             />         
-               
+
         </ScrollView>
     )
 }
@@ -369,7 +461,7 @@ function FormAdd(props){
                 inputContainerStyle={[styles.textArea, { borderBottomWidth: 1, borderBottomColor: colors.input }]}
                 onChange={(e) => setRestaurantDescription(e.nativeEvent.text)}
                 inputStyle={{color: colors.text}}         
-                
+
             />                         
         </View>
     )
@@ -425,11 +517,11 @@ function UploadImages(props){
                 // console.log(imagesSelected);                
             }            
         }        
-        
+
     }
 
     return(
-    
+
     <View style={styles.UploadImages}>
         {size(imagesSelected) < 5 && (
         <Icon
@@ -646,7 +738,7 @@ const styles = StyleSheet.create({
 
         justifyContent: "center",
         alignItems: "center",
-        
+
     }, 
 
     btnActivateLocation: {
@@ -665,7 +757,7 @@ const styles = StyleSheet.create({
 
     imgNoLocation: {
         width: "40%",                                     
-                        
+
         marginTop: 100,
         marginRight: 110,           
     },
@@ -691,4 +783,10 @@ const styles = StyleSheet.create({
         borderRadius: 8
     }
 });
+
+
+
+
+
+
 

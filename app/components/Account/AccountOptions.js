@@ -8,12 +8,15 @@ import ChangeDisplayNameForm from "../../components/Account/ChangeDisplayNameFor
 import ChangeEmailForm from "../../components/Account/ChangeEmailForm";
 import ChangePasswordForm from "../../components/Account/ChangePasswordForm";
 
+import LoadingManual from "../../components/LoadingManual";
+
 import * as firebase from "firebase";
 
 export default function AccountOptions(props){    
 
     const { userInfo, toastRef, setReloadUserInfo } = props;
     const { colors } = useTheme();    
+    const [isVisible, setIsVisible] = useState(false);
 
     const selectedComponent = (key) => {
         switch (key) {
@@ -53,14 +56,16 @@ export default function AccountOptions(props){
                 break;
         }
     }
-    const menuOptions = generateOptions(selectedComponent, firebase);
+
+    const menuOptions = generateOptions(selectedComponent, firebase, setIsVisible);
     const [showModal, setShowModal] = useState(true);
     const [renderComponent, setRenderComponent] = useState(null);
 
     const openModal = () => setShowModal(true);
 
     return(
-    <View>  
+    <View> 
+        <LoadingManual isVisible={isVisible} /> 
         {map(menuOptions, (menu, index) => (            
             <ListItem
                 titleStyle={{color: colors.textSecondary}}
@@ -90,7 +95,11 @@ export default function AccountOptions(props){
     );
 }
 
-function generateOptions(selectedComponent, firebase){
+function generateOptions(selectedComponent, firebase, setIsVisible){
+    const logOut = () => {
+        setIsVisible(true);        
+        firebase.auth().signOut();
+    }    
     return(
         [
             {
@@ -120,7 +129,7 @@ function generateOptions(selectedComponent, firebase){
                 iconType: "material-community",
                 iconNameLeft: "logout",
                 iconNameRight: "chevron-right",
-                onPress:() => firebase.auth().signOut()
+                onPress:() => logOut()
             },            
         ]
     )

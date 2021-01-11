@@ -48,13 +48,22 @@ export default function RegisterForm(props){
 				} else {
                     setLoadingDefault(true);
 					await firebase.auth().createUserWithEmailAndPassword(email, password)
-					.then(() => {			
-                    firebase.auth().signOut();
-                    setLoadingCreatedAccount(true);
-                    setLoadingDefault(false);
-                    toastRef.current.show("Cuenta creada exitosamente!");
-                    navigation.navigate("login");			
-                    setLoadingCreatedAccount(false);		
+					.then(response => {
+						firebase.firestore().collection(response.user.uid).doc("Datos_Principales").set({
+							Modo_Oscuro: false,
+							Datos_Cargados: true
+						  }).then(response=>{							
+							console.log("se guardaron los datos en la BD");							  							
+							setLoadingCreatedAccount(true);
+							setLoadingDefault(false);
+							// toastRef.current.show("Cuenta Creada Exitosamente!");
+							firebase.auth().signOut();
+							navigation.navigate("login");			
+							setLoadingCreatedAccount(false);	
+						  }).catch(error=>{
+							console.log("No Se Guardaron Los Datos En La BD");							
+						  })    						
+	
 					}).catch(() => {						
 						toastRef.current.show("Ha habido un error al crear la cuenta");
 					});

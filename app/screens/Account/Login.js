@@ -8,6 +8,8 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view
 import LoginFacebook from "../../components/Account/LoginFacebook";
 import { useNavigation, useTheme } from "@react-navigation/native";
 
+import LoadingManual from "../../components/LoadingManual";
+
 const HeightScreen2 = Dimensions.get("window").height;
 const HeightScreen = HeightScreen2 - 340;
 // console.log(HeightScreen);
@@ -24,6 +26,7 @@ export default function Login(){
 	const [password, setPassword] = useState("");	
 
 	const { colors } = useTheme();
+	const [isVisible, setIsVisible] = useState(false);
 	// console.log(colors);
 	
 	
@@ -34,24 +37,26 @@ export default function Login(){
 
 	const login = async () => {		
 		// signo ! significa Si email esta NUll o vacio ; == igual, !== diferente de
+		setIsVisible(true);
 		if(!email || !password){
 			toastRef.current.show("Todos los campos son necesarios");
 		} else {
 		  if(!validateEmail(email)){		  
 		  	toastRef.current.show("Email no valido");
 			} else {				
-						await firebase.auth().signInWithEmailAndPassword(email, password)
-						 .then(res=>{
-							navigation.navigate("account");	
-							console.log("Existe Usuario Activo");	
-						 })
-						 .catch(function(error) {
-							 var errorCode = error.code;
-							 var errorMessage = error.message;
-							 console.log("erroCode: "+errorCode);
-							 console.log("errorMessage: "+errorMessage);
-							 //Aquí aplicaría los errores de contraseña incorrecta, el usuario no existe, etc.
-						 });					
+				await firebase.auth().signInWithEmailAndPassword(email, password)
+					.then(res=>{
+					navigation.navigate("account");	
+					console.log("Existe Usuario Activo");	
+					})
+					.catch(function(error) {
+						setIsVisible(false);
+						var errorCode = error.code;
+						var errorMessage = error.message;
+						console.log("erroCode: "+errorCode);
+						console.log("errorMessage: "+errorMessage);
+						//Aquí aplicaría los errores de contraseña incorrecta, el usuario no existe, etc.
+					});					
 			}
 		}	
 	};	
@@ -60,7 +65,7 @@ export default function Login(){
 
 	return(
 <KeyboardAwareScrollView enableOnAndroid={false}>
-
+<LoadingManual isVisible={isVisible} />
 <View style={styles.viewInputsForm}>		
 {/* <Text>
 	
@@ -160,7 +165,9 @@ const styles = StyleSheet.create({
 	viewInputsForm: {	
 		marginTop: 35,				
 		marginRight: 20,
-		marginLeft: 20,				
+		marginLeft: 20,		
+		// borderWidth: 2,
+		// borderColor: "red"	
 	},
 
 	btnLogin: {			
@@ -172,11 +179,12 @@ const styles = StyleSheet.create({
 
 	viewLoginWithfacebook:{
 		marginTop: 40,
+		marginLeft: 140,
 		// borderWidth: 2, 
 		// borderColor: "#6848F2",
 		flex: 1,
 		flexDirection: "row",
-		justifyContent: "flex-end",
+		justifyContent: "center",		
 		marginRight: 140,
 		width: "100%"
 	},
@@ -194,7 +202,9 @@ const styles = StyleSheet.create({
 
 	inptForm: {
 		width: "100%",
-		marginTop: 20,		
+		marginTop: 20,	
+		backgroundColor: "#e6e6ff",		
+		borderRadius: 30,
 	},
 	
 	iconsInputRegisterLeft: {

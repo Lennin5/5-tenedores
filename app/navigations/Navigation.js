@@ -1,6 +1,6 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from "react-native";
-import { Icon, Button, Text } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -10,25 +10,53 @@ import TopRestaurantsStack from "./TopRestaurantsStack";
 import SearchStack from "./SearchStack";
 import AccountStack from "./AccountStack";
 
-import * as firebase from "firebase";
+
+import { firebaseApp } from "../utils/firebase";
+import firebase from "firebase/app";
+import "firebase/firestore";
+const db = firebase.firestore(firebaseApp);
+
+import IntroApp from "../components/IntroApp";
 
 const Tab = createBottomTabNavigator();
 
-export default function Navigation() {    
-  
+export default function Navigation() {
+
+  const [userState, setUserState] = useState(null);
+  const [darkMode, setDarkMode] = useState(null);
+
   useEffect(() => {
-		(async () =>{
-			const user = await firebase.auth().currentUser;						      	
-      // setDarkMode(user.displayName === "1" ? true : false);
-		})();		
+    (async () => {
+
+      firebase.auth().onAuthStateChanged(async function (user) {
+        if (user) {
+          setUserState(user);
+          console.log("Existe Usuario Activo");
+          await db.collection(user.uid).doc('Datos_Principales')
+            .onSnapshot(function (doc) {
+              if (doc.exists) {
+                var user = doc.data();
+                setDarkMode(user.Modo_Oscuro);
+              } else {
+                console.log("El documento no existe!");
+                setDarkMode(false);
+              }
+            });
+        } else {
+          setDarkMode(false);
+          setUserState('NoUser');          
+        }
+
+      });
+
+
+    })();
   }, []);
-  
-  const [darkMode, setDarkMode] = useState(false);  
-  // console.log(darkMode);
-  const LightTheme = {  
-    colors: {      
-      ...DefaultTheme.colors,       
-      theme: "light",     
+
+  const LightTheme = {
+    colors: {
+      ...DefaultTheme.colors,
+      theme: "light",
       //============================================================================ 
 
       primary: "#6848F2", //Color primario de la app en modo normal de la app
@@ -52,13 +80,13 @@ export default function Navigation() {
       redColor: "#d60000", // Color rojo de la app en modo normal      
       modalMapColor: "#f8f9fb" //Color del background del Modal Map en modo normal
     }
-  }; 
-  const DarkTheme = {  
+  };
+  const DarkTheme = {
     colors: {
-      ...DefaultTheme.colors,   
-      theme: "dark", 
+      ...DefaultTheme.colors,
+      theme: "dark",
       //============================================================================       
-      
+
       primary: '#726edf', //Color primario de la app en modo oscuro de la app
       secondary: "#111518",//Color secundario de la app en modo oscuro de la app
 
@@ -80,96 +108,90 @@ export default function Navigation() {
       redColor: "#b64040", // Color rojo de la app en modo oscuro      
       modalMapColor: "#0a0a0a" //Color del background del Modal Map en modo oscuro
     },
-  };    
-    return(            
-        <NavigationContainer theme={darkMode ? DarkTheme : LightTheme} >        
-        <StatusBar         
-         backgroundColor={darkMode ? "#000000" : "#ffffff"}
-         barStyle={darkMode ? "light-content" : "dark-content"} />                
-            <Tab.Navigator                                                        
-                initialRouteName="restaurants"
-                tabBarOptions={{ 
-                  inactiveTintColor: darkMode ? "#B1B3B5" : "#9F9F9F",
-                  activeTintColor: darkMode ? "#726edf" : "#6848F2",                     
-                }}
-                screenOptions={({ route }) => ({
-                    tabBarIcon: ({ color }) => screenOptions(route, color),                    
-                  })}                                                                    
-            >                
-                <Tab.Screen                     
-                    name="restaurants"
-                    component={RestaurantsStack} 
-                    options={{ title: "Restaurantes" }}        
-                />
-                <Tab.Screen 
-                    name="favorites"
-                    component={FavoritesStack} 
-                    options={{ title: "Favoritos" }}                                                                  
-                />
-                <Tab.Screen 
-                    name="top-restaurants"
-                    component={TopRestaurantsStack} 
-                    options={{ title: "Top 5" }}
-                />    
-                <Tab.Screen 
-                    name="search"
-                    component={SearchStack} 
-                    options={{ title: "Buscar" }}
-                    darkMode={darkMode}                                                                
-                    setDarkMode={setDarkMode}                    
-                />                 
-                <Tab.Screen                     
-                    name="account"
-                    component={AccountStack} 
-                    options={{ title: "Mi Cuenta" }}                    
-                />                                                 
-            </Tab.Navigator>             
-            {/* Aquí paso los props de mi estado    */}
-            <Buttom darkMode={darkMode} setDarkMode={setDarkMode} />
-        </NavigationContainer>                
-    );      
+  };
+
+  return (
+    <>
+    <IntroApp />    
+    <NavigationContainer theme={darkMode ? DarkTheme : LightTheme}>
+      <StatusBar
+        backgroundColor={darkMode ? "#000000" : "#ffffff"}
+        barStyle={darkMode ? "light-content" : "dark-content"} />
+      <Tab.Navigator
+        initialRouteName="account"
+        tabBarOptions={{
+          inactiveTintColor: darkMode ? "#B1B3B5" : "#9F9F9F",
+          activeTintColor: darkMode ? "#726edf" : "#6848F2",
+        }}
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ color }) => screenOptions(route, color),
+        })}
+      >
+        <Tab.Screen
+          name="restaurants"
+          component={RestaurantsStack}
+          options={{ title: "Restaurantes" }}
+        />
+        <Tab.Screen
+          name="favorites"
+          component={FavoritesStack}
+          options={{ title: "Favoritos" }}
+        />
+        <Tab.Screen
+          name="top-restaurants"
+          component={TopRestaurantsStack}
+          options={{ title: "Top 5" }}
+        />
+        <Tab.Screen
+          name="search"
+          component={SearchStack}
+          options={{ title: "Buscar" }}
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+        />
+        <Tab.Screen
+          name="account"
+          component={AccountStack}
+          options={{ title: "Mi Cuenta" }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
+    </>
+  );
 }
 
-// ¿Cómo importar éste componente en la screen de Restaurants?
-export function Buttom(props){
-    const { darkMode, setDarkMode } = props;        
-    return(
-      <Button   
-      title={darkMode ? "Dark Mode: Enabled" : "Dark Mode: Disabled"}
-      titleStyle={{color: [darkMode ? "white" : "black"]}}              
-      onPress={()=>setDarkMode(!darkMode)}      
-      buttonStyle={{
-        backgroundColor: [darkMode ? "black" : "white"],                
-        borderWidth: 1,
-        borderColor: [darkMode ? "white" : "black"]                                
-      }}   
-    />   
-    )
-}
 
 function screenOptions(route, color) {
-    let iconName;
-  
-    switch (route.name) {
-      case "restaurants":
-        iconName = "compass-outline";
-        break;
-      case "favorites":
-        iconName = "heart-outline";
-        break;
-      case "top-restaurants":
-        iconName = "star-outline";
-        break;
-      case "search":
-        iconName = "magnify";
-        break;
-      case "account":
-        iconName = "account-outline";
-        break;
-      default:
-        break;
-    }
-    return (
-      <Icon type="material-community" name={iconName} size={25} color={color} />
-    );
+  let iconName;
+
+  switch (route.name) {
+    case "restaurants":
+      iconName = "compass-outline";
+      break;
+    case "favorites":
+      iconName = "heart-outline";
+      break;
+    case "top-restaurants":
+      iconName = "star-outline";
+      break;
+    case "search":
+      iconName = "magnify";
+      break;
+    case "account":
+      iconName = "account-outline";
+      break;
+    default:
+      break;
   }
+  return (
+    <Icon type="material-community" name={iconName} size={25} color={color} />
+  );
+}
+
+// API Google Maps: AIzaSyAqlkPP-3fCTXPuWWUkW2UVVJ9bc0L0dAQ
+
+// Configuring credentials for lein in project 5-tenedores
+// Google Certificate Fingerprint:     C4:7C:1D:90:6B:84:D6:28:9D:BB:56:0A:02:F9:64:86:9E:23:8C:16
+// Google Certificate Hash SHA-1:    C47C1D906B84D6289DBB560A02F964869E238C16
+// Google Certificate Hash SHA-256:  79254429D3E0ED232A9E1F1C7C8C6D3A9BA83A51D0FD35F8A2AFFF6E89329518
+// Facebook Key Hash:                  xHwdkGuE1iidu1YKAvlkhp4jjBY=

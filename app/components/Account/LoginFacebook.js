@@ -47,15 +47,22 @@ export default function LoginFacebook(props){
     
     return (
       <>
-  
-      <Text	
+      <SocialIcon
+        title='Ingresar con Facebook'
+        button
+        type='facebook'
+        style={{width: "60%"}}
+        onPress={login}
+      />   
+      {/* <Text	
           style={{ marginTop: 20, color: colors.textSecondary }}
           >O Inicia Sesión Con</Text>	    
       <SocialIcon
         type='facebook'    
         onPress={login}
-      />
+      />   */}
       <LoadingFacebook isVisible={loading} />	
+ 
       </>
       )    
   }
